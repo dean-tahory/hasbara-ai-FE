@@ -1,7 +1,7 @@
 "use client";
 
-import { FC, useEffect } from "react";
 import { CreateMessage, Message, useChat } from "ai/react";
+import { FC, useEffect } from "react";
 
 import ChatList from "./chat-list";
 import ChatPanel from "./chat-panel";
@@ -11,8 +11,12 @@ import { useSearchParams } from "next/navigation";
 import { useSession } from "@/contexts/SessionContext";
 import { useToast } from "@/lib/hooks/use-toast";
 
-const FE_ENV = process.env.FE_ENV || process.env.NEXT_PUBLIC_FE_ENV ||
-  (function() {throw new Error("Missing env variable NEXT_PUBLIC_FE_ENV. Please setup `.env` file per `.env.example`")})()
+const FE_ENV =
+  process.env.FE_ENV ||
+  process.env.NEXT_PUBLIC_FE_ENV ||
+  (function () {
+    throw new Error("Missing env variable NEXT_PUBLIC_FE_ENV. Please setup `.env` file per `.env.example`");
+  })();
 
 const MIDDLEWARE_URI = process.env.MIDDLEWARE_URI ?? (FE_ENV == "LOCAL" ? "https://hasbara.ai" : "");
 
@@ -28,7 +32,7 @@ const Chat: FC<ChatProps> = ({}) => {
   const { isLoading, messages, input, setInput, handleInputChange, handleSubmit, append } = useChat({
     api: api_uri,
     sendExtraMessageFields: true,
-        body: {
+    body: {
       userSession: session,
     },
     onError: (error) => {
@@ -45,27 +49,25 @@ const Chat: FC<ChatProps> = ({}) => {
           `${msg.content}\n ||||| ${msg?.role ?? 'no role'} | \n${msg?.id ?? 'no id'} | \n${msg?.createdAt ?? 'no createdAt'}`,
       });*/
       const res_promise = fetch(api_uri, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           userSession: session,
           messages: messages,
           onFinishMsg: msg,
-        })
+        }),
       }).catch((e) => {
         console.log(e);
       });
     },
   });
 
-
   useEffect(() => {
     const fetchRes = async () => {
       try {
-        const res = await append(
-          {
-            content: search,
-            role: "user",
-          } as CreateMessage);
+        const res = await append({
+          content: search,
+          role: "user",
+        } as CreateMessage);
         console.log(res);
       } catch (e) {
         console.log(e);
@@ -75,7 +77,6 @@ const Chat: FC<ChatProps> = ({}) => {
     const search = searchParams.get("s");
     if (search) setTimeout(fetchRes, 50);
   }, []);
-
 
   return (
     <>
